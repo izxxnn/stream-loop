@@ -10,18 +10,15 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install Tools
+    - name: Install FFmpeg
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg python3-pip
-        pip3 install --upgrade yt-dlp
+        sudo apt-get install -y ffmpeg
 
     - name: Start Video Loop
       run: |
-        # Nayi 11-minute wali live stream ka link
-        YT_LINK="https://www.youtube.com/watch?v=XRksycbJ6Cg"
-        
-        # B2B bypass arguments use kar rahe hain
-        VIDEO_URL=$(yt-dlp --geo-bypass --extractor-args "youtube:player-client=android,web" -g -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "$YT_LINK")
+        # Catbox ka direct mp4 link yahan set ho gaya hai
+        VIDEO_URL="https://files.catbox.moe/k7pdvl.mp4"
         
         ffmpeg -re -stream_loop -1 -i "$VIDEO_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        
