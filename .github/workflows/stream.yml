@@ -10,13 +10,15 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install FFmpeg
+    - name: Install Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg
+        sudo apt-get install -y ffmpeg python3-pip
+        pip3 install yt-dlp
 
     - name: Start Video Loop
       run: |
-        VIDEO_URL="APNI_VIDEO_KA_DIRECT_LINK"
+        YT_LINK="https://www.youtube.com/live/ZpiJ1lbDh1M"
+        VIDEO_URL=$(yt-dlp -g -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "$YT_LINK")
         ffmpeg -re -stream_loop -1 -i "$VIDEO_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
