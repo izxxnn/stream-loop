@@ -1,4 +1,4 @@
-name: 24/7 Stream Loop
+nname: 24/7 Stream Loop
 
 on:
   workflow_dispatch:
@@ -18,10 +18,10 @@ jobs:
 
     - name: Start Video Loop
       run: |
-        YT_LINK="https://www.youtube.com/watch?v=ZpiJ1lbDh1M"
+        # Nayi 11-minute wali live stream ka link
+        YT_LINK="https://www.youtube.com/watch?v=XRksycbJ6Cg"
         
-        # Is baar hum bypass settings use kar rahe hain taaki YouTube bot block na kare
+        # B2B bypass arguments use kar rahe hain
         VIDEO_URL=$(yt-dlp --geo-bypass --extractor-args "youtube:player-client=android,web" -g -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "$YT_LINK")
         
         ffmpeg -re -stream_loop -1 -i "$VIDEO_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
-        
