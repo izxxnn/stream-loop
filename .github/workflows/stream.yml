@@ -10,14 +10,18 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install FFmpeg
+    - name: Install Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg
+        sudo apt-get install -y ffmpeg python3-pip
+        pip3 install --upgrade yt-dlp
 
     - name: Start Video Loop
       run: |
-        VIDEO_URL="https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1782697033/ei/6XdBapSYKcHa3LUP1sSr6Ao/ip/103.249.250.250/id/ZpiJ1lbDh1M.1/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/rqh/1/hls_chunk_host/rr3---sn-nv4uj5aa-cvhz.googlevideo.com/xpc/EgVo2aDSNQ%3D%3D/force_finished/1/bui/ARmQxEVYHc5pdhala6MvT2LIAk3ws5t_gR7oysaKLz7c3YLDM4LT6MYSeSX1_vkVuGr00WyOyH59iv5f/spc/SQ-umg3Q4fR3awa-AO2QOM3HkMtsPDJi7Jl4_tPdxf65Q5H4pQ/vprv/1/reg/0/playlist_type/CLEAN/initcwndbps/1591250/met/1782675434,/mh/ku/mm/44/mn/sn-nv4uj5aa-cvhz/ms/lva/mv/m/mvi/3/pl/24/rms/lva,lva/dover/11/pacing/0/keepalive/yes/fexp/51565116,51565682,52017146/mt/1782674912/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,rqh,xpc,force_finished,bui,spc,vprv,reg,playlist_type/sig/AHEqNM4wRQIgDuLd8OTjxI3Ao5ZGrhywQWYMZrtlobykqkFXlxGlPtkCIQCZj-cB8OgpEtctWEEfHkNfNoiTTlLh_2EgUWzz-T3vEg%3D%3D/lsparams/hls_chunk_host,initcwndbps,met,mh,mm,mn,ms,mv,mvi,pl,rms/lsig/APaTxxMwRQIgcaFJZNpZPAVA9AK7AGayK2zg1oWZMxey-EmW-vdtA74CIQDpR4IXNgUT_iB2JBHV-vIB8UR84nDTDKIgEDq6cBz04Q%3D%3D/playlist/index.m3u8"
+        YT_LINK="https://www.youtube.com/watch?v=ZpiJ1lbDh1M"
         
-        ffmpeg -re -stream_loop -1 -protocol_whitelist file,crypto,data,tcp,tls,http,https,rtmp -i "$VIDEO_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        # Is baar hum bypass settings use kar rahe hain taaki YouTube bot block na kare
+        VIDEO_URL=$(yt-dlp --geo-bypass --extractor-args "youtube:player-client=android,web" -g -f "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "$YT_LINK")
+        
+        ffmpeg -re -stream_loop -1 -i "$VIDEO_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
