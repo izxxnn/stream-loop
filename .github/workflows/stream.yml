@@ -1,4 +1,4 @@
-nname: 24/7 Stream Loop
+name: 24/7 Stream Loop
 
 on:
   workflow_dispatch:
