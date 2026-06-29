@@ -17,6 +17,7 @@ jobs:
 
     - name: Start Shorts Video Loop
       run: |
-        # Catbox direct mp4 link se loop chalane ke liye ekdum basic aur robust setup
-        ffmpeg -re -stream_loop -1 -i "https://litter.catbox.moe/3j4rnq7l9qeiktlp.mp4" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        ffmpeg -re -stream_loop -1 -i "https://litter.catbox.moe/3j4rnq7l9qeiktlp.mp4" \
+        -vcodec libx264 -preset veryfast -r 30 -g 60 -b:v 3000k -maxrate 3000k -bufsize 6000k \
+        -acodec aac -b:a 128k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
