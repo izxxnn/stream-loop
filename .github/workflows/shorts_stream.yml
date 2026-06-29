@@ -10,21 +10,17 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install FFmpeg
+    - name: Install FFmpeg and yt-dlp
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg
+        sudo apt-get install -y ffmpeg python3-pip
+        sudo pip3 install --upgrade yt-dlp
 
     - name: Start Shorts Video Loop
       run: |
-        # Gofile ka direct stream extract karke loop chalane ke liye
-        # Hum gofile ke page se direct download link automatic fetch kar rahe hain
-        DIRECT_URL=$(curl -s "https://api.gofile.io/contents/getFolder?folderId=TjCyFH" | grep -oE '"link":"[^"]+"' | head -n 1 | cut -d'"' -f4)
+        # GoFile ka normal share link use karke direct stream output nikalenge
+        DIRECT_URL=$(yt-dlp -g "https://gofile.io/d/TjCyFH")
         
-        if [ -z "$DIRECT_URL" ]; then
-          # Fallback link agar API directly respond na kare
-          DIRECT_URL="https://stream.gofile.io/download/web/TjCyFH/video.mp4"
-        fi
-
+        # FFmpeg loop running directly from the stream url
         ffmpeg -re -stream_loop -1 -i "$DIRECT_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
