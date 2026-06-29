@@ -10,17 +10,13 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Install FFmpeg and yt-dlp
+    - name: Install FFmpeg
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg python3-pip
-        sudo pip3 install --upgrade yt-dlp
+        sudo apt-get install -y ffmpeg
 
     - name: Start Shorts Video Loop
       run: |
-        # GoFile ka normal share link use karke direct stream output nikalenge
-        DIRECT_URL=$(yt-dlp -g "https://gofile.io/d/TjCyFH")
-        
-        # FFmpeg loop running directly from the stream url
-        ffmpeg -re -stream_loop -1 -i "$DIRECT_URL" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        # Catbox direct mp4 link se loop chalane ke liye ekdum basic aur robust setup
+        ffmpeg -re -stream_loop -1 -i "https://litter.catbox.moe/3j4rnq7l9qeiktlp.mp4" -vcodec libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k -acodec aac -b:a 128k -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
