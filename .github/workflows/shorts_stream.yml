@@ -15,10 +15,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
-    - name: Start Direct Stream Loop
+    - name: Download Video to GitHub Server
       run: |
-        # Video resolution ko standard format me force scale karne ke liye filters ke sath setup
-        ffmpeg -re -stream_loop -1 -i "https://filebin.net/6yb1u63cx9qhkzqk/VN20260630_121010.mp4" \
+        echo "Downloading video from Filebin..."
+        # Filebin se pehle poori 1.8 GB file fast download hogi local me
+        curl -L -o local_video.mp4 "https://filebin.net/6yb1u63cx9qhkzqk/VN20260630_121010.mp4"
+        echo "Download complete. Checking file size:"
+        ls -lh local_video.mp4
+
+    - name: Start Shorts Video Loop
+      run: |
+        # Local file + Perfect resolution scale filter for YouTube Shorts
+        ffmpeg -re -stream_loop -1 -i local_video.mp4 \
         -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
         -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -g 60 \
         -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
