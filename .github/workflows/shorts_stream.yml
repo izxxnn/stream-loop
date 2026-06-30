@@ -24,9 +24,9 @@ jobs:
 
     - name: Start Shorts Video Loop
       run: |
-        # Local file loop + standard resolution filters for Shorts feed
+        # Bitrate ko badha kar standard HD full quality par lock kiya hai
         ffmpeg -re -stream_loop -1 -i local_video.mp4 \
         -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
-        -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -g 60 \
+        -c:v libx264 -preset veryfast -b:v 4500k -maxrate 5000k -bufsize 9000k -g 60 \
         -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
