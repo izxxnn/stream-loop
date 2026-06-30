@@ -1,4 +1,4 @@
-name: 24/7 Shorts Stream Loop
+name: Among Us 24/7 Stream
 
 on:
   workflow_dispatch:
@@ -15,17 +15,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
-    - name: Download Video to GitHub Server
+    - name: Download Among Us Video
       run: |
-        echo "Downloading video from Litterbox..."
-        # Isse poori file pehle GitHub ke local storage me save ho jayegi
-        curl -L -o local_video.mp4 "https://litter.catbox.moe/3j4rnq7l9qeiktlp.mp4"
+        echo "Downloading Among Us animation video..."
+        # Storage.to se file ko pehle local server par fast download karega
+        curl -L -o local_video.mp4 "https://storage.to/T6tuTpsOe"
         echo "Download complete. Checking file size:"
         ls -lh local_video.mp4
 
-    - name: Start Shorts Video Loop
+    - name: Start Stream
       run: |
-        # Ab FFmpeg local file se bina ruke loop chalaye gaa
+        # Local file se seamless 24/7 loop stream chalu
         ffmpeg -re -stream_loop -1 -i local_video.mp4 \
         -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k -g 60 \
         -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
