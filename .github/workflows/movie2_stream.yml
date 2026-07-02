@@ -1,0 +1,33 @@
+name: 24/7 Fast And Furious 1954 Stream
+
+on:
+  workflow_dispatch:
+
+jobs:
+  stream:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install FFmpeg
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+
+    - name: Download AVI Movie to GitHub Server
+      run: |
+        echo "Downloading original AVI movie from Archive.org..."
+        # AVI format ka high quality direct link
+        curl -L -o movie2.avi "https://archive.org/download/TheFastandtheFuriousJohnIreland1954goofyrip/TheFastandtheFuriousJohnIreland1954goofyrip.avi"
+        echo "Download complete. Checking file status:"
+        ls -lh movie2.avi
+
+    - name: Start Movie Landscape Loop
+      run: |
+        # AVI input ko smooth process karne ke liye refined filter aur best bitrate settings
+        ffmpeg -re -stream_loop -1 -i movie2.avi \
+        -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" \
+        -c:v libx264 -preset veryfast -b:v 4500k -maxrate 5000k -bufsize 9000k -g 60 \
+        -c:a aac -b:a 192k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        
