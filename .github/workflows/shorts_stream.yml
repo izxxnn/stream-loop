@@ -15,18 +15,19 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
-    - name: Download Movie from Archive.org
+    - name: Download Movie to GitHub Server
       run: |
-        echo "Downloading movie..."
-        # Archive.org ka direct link
-        curl -L -o local_video.mp4 "https://dn721601.ca.archive.org/0/items/night-of-the-living-dead-1968-colorized/Night%20of%20the%20Living%20Dead%20%281968%29%20Colorized.mp4"
-        echo "Download complete."
+        echo "Downloading movie from Archive.org locally..."
+        # Local system me direct download bina kisi protocol error ke
+        curl -L -o movie.mp4 "https://dn721601.ca.archive.org/0/items/night-of-the-living-dead-1968-colorized/Night%20of%20the%20Living%20Dead%20%281968%29%20Colorized.mp4"
+        echo "Download complete. File status:"
+        ls -lh movie.mp4
 
-    - name: Start Movie Loop
+    - name: Start Movie Landscape Loop
       run: |
-        # Movie ko fit karne ke liye perfect scale aur high bitrate settings
-        ffmpeg -re -stream_loop -1 -i local_video.mp4 \
-        -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
+        # Perfect Full HD Landscape Filter (1920x1080) aur High Quality Bitrate
+        ffmpeg -re -stream_loop -1 -i movie.mp4 \
+        -vf "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2" \
         -c:v libx264 -preset veryfast -b:v 4500k -maxrate 5000k -bufsize 9000k -g 60 \
         -c:a aac -b:a 192k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
