@@ -1,4 +1,4 @@
-name: Among Us 24/7 Stream
+name: 24/7 Movie Stream
 
 on:
   workflow_dispatch:
@@ -15,18 +15,18 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg
 
-    - name: Download Video from GitHub Release
+    - name: Download Movie from Archive.org
       run: |
-        echo "Downloading video from GitHub Releases locally..."
-        curl -L -o local_video.mp4 'https://github.com/izxxnn/stream-loop/releases/download/v1.0/VN20260630_121010.mp4'
-        echo "Download complete. File status:"
-        ls -lh local_video.mp4
+        echo "Downloading movie..."
+        # Archive.org ka direct link
+        curl -L -o local_video.mp4 "https://dn721601.ca.archive.org/0/items/night-of-the-living-dead-1968-colorized/Night%20of%20the%20Living%20Dead%20%281968%29%20Colorized.mp4"
+        echo "Download complete."
 
-    - name: Start Shorts Video Loop
+    - name: Start Movie Loop
       run: |
-        # Bitrate ko badha kar standard HD full quality par lock kiya hai
+        # Movie ko fit karne ke liye perfect scale aur high bitrate settings
         ffmpeg -re -stream_loop -1 -i local_video.mp4 \
         -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2" \
         -c:v libx264 -preset veryfast -b:v 4500k -maxrate 5000k -bufsize 9000k -g 60 \
-        -c:a aac -b:a 128k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
+        -c:a aac -b:a 192k -ar 44100 -f flv "rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}"
         
